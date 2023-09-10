@@ -1,0 +1,29 @@
+//create cylinder
+polyCylinder -r 1 -h 2 -sx 20 -sy 6 -sz 1 -ax 0 1 0 -rcp 0 -cuv 3 -ch 1;
+move -relative -objectSpace -worldSpaceDistance 0 1 0 ;
+//select and extrude face loop
+select -replace pCylinder1.f[0:19];
+polyExtrudeFacet -constructionHistory 1 -keepFacesTogether 1 -pvx -1.192092896e-07 -pvy 0.1666666865 -pvz -1.788139343e-07 -divisions 1 -twist 0 -taper 1 -off 0 -thickness 0 -smoothingAngle 30 pCylinder1.f[0:19];
+setAttr "polyExtrudeFace1.localTranslate" -type double3 0 0 0.75 ;
+//insert edge loop
+select -r pCylinder1.e[140:159] ;
+polySplitRing -ch on -splitType 0 -weight 0.534366 -smoothingAngle 30 -fixQuads 1 -insertWithEdgeFlow 0 -direction 0 -rootEdge 155 ;
+//soft selects edgeloops
+select -r pCylinder1.e[60:79];
+select -add pCylinder1.e[80:99] ;
+softSelect -ssd 0.655654 -sud 0.5;
+//scales inside of hat
+scale -r -p -1.19209e-07cm 0.166667cm -1.78814e-07cm 0.865889 0.865889 0.865889 ;
+softSelect -sse 0;
+//move hat rim up
+select -add pCylinder1.f[120:139] pCylinder1.f[160] pCylinder1.f[162] pCylinder1.f[164] pCylinder1.f[166] pCylinder1.f[168] pCylinder1.f[170] pCylinder1.f[172] pCylinder1.f[174] pCylinder1.f[176] pCylinder1.f[178] pCylinder1.f[180] pCylinder1.f[182] pCylinder1.f[184] pCylinder1.f[186] pCylinder1.f[188] pCylinder1.f[190] pCylinder1.f[192] pCylinder1.f[194] pCylinder1.f[196] pCylinder1.f[198] ;
+move -r 0 0.14876 0 ;
+//add hat ribbon
+select -r pCylinder1.f[20:39];
+polyExtrudeFacet -constructionHistory 1 -keepFacesTogether 1 -pvx -1.192092896e-07 -pvy 0.4223943949 -pvz -1.788139343e-07 -divisions 1 -twist 0 -taper 1 -off 0 -thickness 0 -smoothingAngle 30 pCylinder1.f[20:39];
+setAttr "polyExtrudeFace2.localTranslate" -type double3 0 0 0.0336926 ;
+//hollow out hat
+polyExtrudeFacet -constructionHistory 1 -keepFacesTogether 1 -pvx -1.192092896e-07 -pvy 0.1487600207 -pvz -1.788139343e-07 -divisions 1 -twist 0 -taper 1 -off 0 -thickness 0 -smoothingAngle 30 pCylinder1.f[120:139];
+scale -r -p -1.19209e-07cm 0.14502cm -1.78814e-07cm 0.991543 0.991543 0.991543 ;
+polyExtrudeFacet -constructionHistory 1 -keepFacesTogether 1 -pvx -1.192092896e-07 -pvy 0.1450195312 -pvz -1.788139343e-07 -divisions 1 -twist 0 -taper 1 -off 0 -thickness 0 -smoothingAngle 30 pCylinder1.f[120:139];
+setAttr "polyExtrudeFace4.localTranslate" -type double3 0 0 -0.5.5 ;
