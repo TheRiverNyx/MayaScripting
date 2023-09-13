@@ -1,0 +1,47 @@
+proc GenerateStairCase(int $numOfStairs, float $stepHeight, float $stepWidth, float $radius)
+{
+    float $angleIncrement = 360/$numOfStairs;
+    float $currentAngle = 0.0;
+    float $currentHeight = 0.0;
+    for ($x=0; $x<$numOfStairs; $x++){
+        string $step[];
+        $step = `polyCube -w $stepWidth -h $stepHeight -d ($radius*2) -sx 1 -sy 1 -sz 1 -ax 0 1 0 -cuv 4 -ch 1`;
+
+        float $xPosition = $radius * (`sind $currentAngle`);
+        float $zPosition = $radius * (`cosd $currentAngle`);
+
+        move $xPosition ($currentHeight + ($stepHeight/2.0)) $zPosition $step[0];
+        rotate 0 $currentAngle 0 $step[0];
+
+        $currentAngle += $angleIncrement;
+        $currentHeight += $stepHeight;
+    }
+}
+proc float PromptForValue(int $x){
+    float $value;
+    string $title[]={"height","step height","step width","Radius"};
+    string $message[]={"How many steps would you like?","How tall would you like the step to be?","How wide would you like the steps to be?","How long would you like the steps?"};
+    string $result = `promptDialog
+	    -title $title[$x]
+	    -message $message[$x]
+	    -button "OK" -button "Cancel"
+	    -defaultButton "OK" -cancelButton "Cancel"
+	    -dismissString "Cancel"`;
+    // Use the command again in query mode to
+    // get the text:
+    if ($result == "OK") {
+	    $value = `promptDialog -query -text`;
+    }
+    return $value;
+    
+}
+proc main()
+{
+    int $stepAmount = (int)PromptForValue(0);
+    float $stepHeightAmount = PromptForValue(1);
+    float $stepWidthAmount = PromptForValue(2);
+    float $stairRaidus = PromptForValue(3);
+    GenerateStairCase($stepAmount, $stepHeightAmount, $stepWidthAmount, $stairRaidus);
+}
+
+main();
