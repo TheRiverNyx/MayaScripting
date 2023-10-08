@@ -4,6 +4,7 @@ proc float Addition(string $Equation[]){
         $total += (float)$Equation[$i];
     }
     print("\nadding");
+    print("\n"+$total);
     return $total;
 }
 /*proc float Difference(string $Equation){
@@ -18,8 +19,10 @@ proc float Multiply(string $Equation){
         $total *= (float)$theNumbers[$i];
     }
     print("\nmultiplying");
+    print("\n"+$total);
     return $total;
 }
+//Multiply("4*5");
 proc float Division(string $Equation){
     int $numberCount;
     string $theNumbers[];
@@ -29,15 +32,20 @@ proc float Division(string $Equation){
         $total /= (float)$theNumbers[$i];
     }
     print("\nDividing");
+    print("\n"+$total);
     return $total;
 }
+//Division("8/4/2");
 proc float Exponent(string $Equation){
     int $numberCount;
     string $theNumbers[];
     $numberCount = `tokenize $Equation "^" $theNumbers`;
+    $total = pow((float)$theNumbers[0], (float)$theNumbers[1]);
     print("\npower");
-    return pow((float)$theNumbers[0], (float)$theNumbers[1]);
+    print("\n"+$total);
+    return $total;
 }
+//Exponent("3^2");
 proc float Mean(string $Equation){
     int $numberCount;
     string $theNumbers[];
@@ -48,6 +56,7 @@ proc float Mean(string $Equation){
     }
     $total/=$numberCount;
     print("\nmean");
+    print("\n"+$total);
     return $total;
 }
 proc float Median(string $Equation){
@@ -55,6 +64,7 @@ proc float Median(string $Equation){
     string $theNumbers[];
     float $median;
     $numberCount = `tokenize $Equation "," $theNumbers`;
+    $theNumbers = `sort $theNumbers`;
     if($numberCount % 2 == 1){
         $median = (float)$theNumbers[$numberCount/2];
     }else{
@@ -63,17 +73,19 @@ proc float Median(string $Equation){
         $median = ($middle1+$middle2)/2;
     }
     print("\nmedian");
+    print("\n"+$median);
     return $median;
 }
+//Median("6,8,9,1,2,6,66");
 proc string doTheMath(string $Equation){
-    $Equation = substituteAllString($Equation, " ","");
-    $Equation = substituteAllString($Equation, "-","+-");
+    $Equation = substituteAllString($Equation, " ","");//removes all spaces
+    $Equation = substituteAllString($Equation, "-","+-");//adds a '+' to the beginning of subtraction signs for parsing.
     string $numbers[];
     float $total = 0;
     int $numberCount = `tokenize $Equation "+" $numbers`;
     for ($i=0;$i<size($numbers);$i++){
         if (`gmatch $numbers[$i] "\^"`){
-            $numbers[$i]=Exponent($numbers[$i]);
+            $numbers[$i]=Exponent($numbers[$i]);//if an "^" is found perform an exponement operatation and return the result to the  array
         }else if (`gmatch $numbers[$i] "\*"`){
             $numbers[$i]=Multiply($numbers[$i]);
         }else if(`gmatch $numbers[$i] "/"`){
@@ -81,13 +93,13 @@ proc string doTheMath(string $Equation){
         }
     }
     print("\n"+stringArrayToString($numbers,"") );
-    $total = Addition($numbers);
+    $total = Addition($numbers);//adds all left over numbers together
     return (string)$total;
 }
 proc Main(){
     string $text;
     float $total;
-    string $result = `promptDialog
+    string $result = `promptDialog//prompt for equation. if doing median or mean type mean or median at beginning and use commas to seperate numbers.
         -title "Equation"
         -message "Enter your equation"
         -button "OK" -button "Cancel"
@@ -96,12 +108,12 @@ proc Main(){
     if ($result == "OK") {
         $text = `promptDialog -query -text`;
     }
-
-    if (`match "mean.*" $text`) {
+    if (`gmatch $text "*mean*"`) { // Checking for "mean" anywhere in the string
         $text = substituteAllString($text, "mean", "");
+        print ("\n"+$text);
         $total = Mean($text);
         print("\n"+"The mean of "+$text+" is "+$total);
-    } else if (`match "median.*" $text`) {
+    } else if (`gmatch $text "*median*"`) { // Checking for "median" anywhere in the string
         $text = substituteAllString($text, "median", "");
         $total = Median($text);
         print("\n"+"The median of "+$text+" is "+$total);
