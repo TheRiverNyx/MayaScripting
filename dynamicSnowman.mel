@@ -1,5 +1,5 @@
-float $size = 3.0;//the size of the base of the body
-int $bodyNumber = 3; // how many spheres the snowman is made of
+float $size = 7;//the size of the base of the body
+int $bodyNumber = 8; // how many spheres the snowman is made of
 float $moveUpLength = 0;//starting value for moveup length
 string $object[];
 for ($x=0;$x<$bodyNumber;$x++){//builds the snowman's body
