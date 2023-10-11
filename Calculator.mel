@@ -108,13 +108,13 @@ proc Main(){
     if ($result == "OK") {
         $text = `promptDialog -query -text`;
     }
-    if (`gmatch $text "*mean*"`) { // Checking for "mean" anywhere in the string
-        $text = substituteAllString($text, "mean", "");
+    if (`gmatch $text "*[Mm][Ee][aA][nN]*"`) { // Checking for "mean" anywhere in the string
+        $text = substituteAllString($text, "*[Mm][Ee][aA][nN]*", "");
         print ("\n"+$text);
         $total = Mean($text);
         print("\n"+"The mean of "+$text+" is "+$total);
-    } else if (`gmatch $text "*median*"`) { // Checking for "median" anywhere in the string
-        $text = substituteAllString($text, "median", "");
+    } else if (`gmatch $text "*[Mm][Ee][Dd][Ii][Aa][nN]*"`) { // Checking for "median" anywhere in the string
+        $text = substituteAllString($text, "*[Mm][Ee][Dd][Ii][Aa][nN]*", "");
         $total = Median($text);
         print("\n"+"The median of "+$text+" is "+$total);
     } else {
@@ -122,5 +122,4 @@ proc Main(){
         print("\n"+$text + "="+ $total);
     }
 }
-
 Main();
