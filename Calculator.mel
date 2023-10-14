@@ -1,3 +1,6 @@
+global string $equationText = "";
+global string $displayText = "displayTxt";
+
 proc float Addition(string $Equation[]){
     float $total = 0;
     for ($i = 0; $i<size($Equation);$i++){
@@ -24,9 +27,10 @@ proc float Multiply(string $Equation){
 }
 //Multiply("4*5");
 proc float Division(string $Equation){
+    print("Processing Division for: " + $Equation + "\n");
     int $numberCount;
     string $theNumbers[];
-    $numberCount = `tokenize $Equation "\\/" $theNumbers`;
+    $numberCount = `tokenize $Equation "/" $theNumbers`;
     float $total = (float)$theNumbers[0];
     for($i=1; $i<$numberCount;$i++){
         $total /= (float)$theNumbers[$i];
@@ -40,13 +44,13 @@ proc float Exponent(string $Equation){
     int $numberCount;
     string $theNumbers[];
     $numberCount = `tokenize $Equation "^" $theNumbers`;
-    $total = pow((float)$theNumbers[0], (float)$theNumbers[1]);
+    float $total = pow((float)$theNumbers[0], (float)$theNumbers[1]);
     print("\npower");
     print("\n"+$total);
     return $total;
 }
 //Exponent("3^2");
-proc float Mean(string $Equation){
+global proc Mean(string $Equation){
     int $numberCount;
     string $theNumbers[];
     float $total=0;
@@ -55,11 +59,14 @@ proc float Mean(string $Equation){
         $total += (float)$theNumbers[$i];
     }
     $total/=$numberCount;
-    print("\nmean");
-    print("\n"+$total);
-    return $total;
+    global string $equationText;
+    global string $displayText;
+    
+    $equationText = "the mean of "+$equationText+" is "+$total;
+    
+    text -edit -label $equationText $displayText;
 }
-proc float Median(string $Equation){
+global proc Median(string $Equation){
     int $numberCount;
     string $theNumbers[];
     float $median;
@@ -72,33 +79,121 @@ proc float Median(string $Equation){
         float $middle2 = (float)$theNumbers[$numberCount/2];
         $median = ($middle1+$middle2)/2;
     }
-    print("\nmedian");
-    print("\n"+$median);
-    return $median;
+    global string $equationText;
+    global string $displayText;
+    
+    $equationText = "the median of "+$equationText+" is "+$median;
+    
+    text -edit -label $equationText $displayText;
 }
 //Median("6,8,9,1,2,6,66");
-proc string doTheMath(string $Equation){
-    $Equation = substituteAllString($Equation, " ","");//removes all spaces
-    $Equation = substituteAllString($Equation, "-","+-");//adds a '+' to the beginning of subtraction signs for parsing.
+global proc doTheMath(){
+    global string $equationText;
+    string $equation = $equationText;
+    print($equation);
+    $equation = substituteAllString($equation, " ","");//removes all spaces
+    $equation = substituteAllString($equation, "-","+-");//adds a '+' to the beginning of subtraction signs for parsing.
     string $numbers[];
     float $total = 0;
-    int $numberCount = `tokenize $Equation "+" $numbers`;
+    int $numberCount = `tokenize $equation "+" $numbers`;
     for ($i=0;$i<size($numbers);$i++){
-        if (`gmatch $numbers[$i] "\^"`){
-            $numbers[$i]=Exponent($numbers[$i]);//if an "^" is found perform an exponement operatation and return the result to the  array
-        }else if (`gmatch $numbers[$i] "\*"`){
-            $numbers[$i]=Multiply($numbers[$i]);
-        }else if(`gmatch $numbers[$i] "/"`){
-            $numbers[$i]=Division($numbers[$i]);
+        int $currentStrSize = size($numbers[$i]);
+        
+        for ($x = 0; $x<$currentStrSize;$x++){
+            string $currentChar = `substring $numbers[$i] ($x+1) ($x+1)`;
+        
+            if ($currentChar == "^") {
+            print("Found a ^ character in: " + $numbers[$i] + " at position: " + ($x+1) + "\n");
+            $numbers[$i] = (string)Exponent($numbers[$i]);
+            }
+        }
+        for ($x = 0; $x<$currentStrSize;$x++){
+            string $currentChar = `substring $numbers[$i] ($x+1) ($x+1)`;
+        
+            if ($currentChar == "/") {
+            print("Found a / character in: " + $numbers[$i] + " at position: " + ($x+1) + "\n");
+            $numbers[$i] = (string)Division($numbers[$i]);
+            }
+
+        }
+        /*if(`gmatch $numbers[$i] "/"`){
+            $numbers[$i]=Division($numbers[$i]);doesn't work
+        }*/
+        for ($x = 0; $x<$currentStrSize;$x++){
+            string $currentChar = `substring $numbers[$i] ($x+1) ($x+1)`;
+        
+            if ($currentChar == "*") {
+            print("Found a * character in: " + $numbers[$i] + " at position: " + ($x+1) + "\n");
+            $numbers[$i] = (string)Multiply($numbers[$i]);
+            }
         }
     }
     print("\n"+stringArrayToString($numbers,"") );
     $total = Addition($numbers);//adds all left over numbers together
-    return (string)$total;
+    global string $equationText;
+    global string $displayText;
+    
+    $equationText = $equationText+"="+$total;
+    
+    text -edit -label $equationText $displayText;
+    
 }
+global proc addToEquation(string $addSymbol) {
+    global string $equationText;
+    global string $displayText;
+    
+    $equationText = $equationText + $addSymbol;
+    
+    text -edit -label $equationText $displayText;
+}
+global proc ClearCalculator(){
+    global string $equationText;
+    global string $displayText;
+    
+    $equationText = "";
+    
+    text -edit -label $equationText $displayText;
+}
+global proc CreateCalculatorUi(){
+    global string $equationText;
+    global string $displayText;
+    if(`window -exists myCalculator`){
+        deleteUI myCalculator;
+    }
+    window myCalculator;
+        columnLayout -adjustableColumn true;
+        frameLayout -labelVisible false -bgc 0.5 0.2 0.2;;
+            text -label "" -width 150 -h 150 $displayText;
+        gridLayout -numberOfColumns 2 -cellWidthHeight 300 400;
+        gridLayout -numberOfColumns 3 -cellWidthHeight 96 96;
+            button -label "1" -c "addToEquation(\"1\")";
+            button -label "2" -c "addToEquation(\"2\")";
+            button -label "3" -c "addToEquation(\"3\")";
+            button -label "4" -c "addToEquation(\"4\")";
+            button -label "5" -c "addToEquation(\"5\")";
+            button -label "6" -c "addToEquation(\"6\")";
+            button -label "7" -c "addToEquation(\"7\")";
+            button -label "8" -c "addToEquation(\"8\")";
+            button -label "9" -c "addToEquation(\"9\")";
+            button -label "0" -c "addToEquation(\"0\")";
+            setParent ..;
+        gridLayout -numberOfColumns 3 -cellWidthHeight 96 96;
+            button -l "=" -c "doTheMath";
+            button -label "\+" -c "addToEquation(\"+\")";
+            button -label "\-" -c "addToEquation(\"-\")";
+            button -label "\*" -c "addToEquation(\"*\")";
+            button -label "\/" -c "addToEquation(\"/\")";
+            button -label "\^" -c "addToEquation(\"^\")";
+            button -label "\," -c "addToEquation(\",\")";
+            button -label "Mean" -c "Mean($equationText)";
+            button -label "Median" -c "Median($equationText)";
+            button -label "Clear" -c "ClearCalculator";
+
+    showWindow myCalculator;
+}
+CreateCalculatorUi();
 proc Main(){
-    string $text;
-    float $total;
+    /*float $total;
     string $result = `promptDialog//prompt for equation. if doing median or mean type mean or median at beginning and use commas to seperate numbers.
         -title "Equation"
         -message "Enter your equation"
@@ -109,17 +204,18 @@ proc Main(){
         $text = `promptDialog -query -text`;
     }
     if (`gmatch $text "*[Mm][Ee][aA][nN]*"`) { // Checking for "mean" anywhere in the string
-        $text = substituteAllString($text, "*[Mm][Ee][aA][nN]*", "");
+        $text = substituteAllString($text, "[Mm][Ee][aA][nN]", "");
         print ("\n"+$text);
         $total = Mean($text);
         print("\n"+"The mean of "+$text+" is "+$total);
-    } else if (`gmatch $text "*[Mm][Ee][Dd][Ii][Aa][nN]*"`) { // Checking for "median" anywhere in the string
-        $text = substituteAllString($text, "*[Mm][Ee][Dd][Ii][Aa][nN]*", "");
+    } else if (`gmatch $text "*[Mm][Ee][Dd][Ii][Aa][Nn]*"`) { // Checking for "median" anywhere in the string
+        $text = substituteAllString($text, "[Mm][Ee][Dd][Ii][Aa][Nn]", "");
         $total = Median($text);
         print("\n"+"The median of "+$text+" is "+$total);
     } else {
         $total = doTheMath($text);
         print("\n"+$text + "="+ $total);
-    }
+    }*/
+    CreateCalculatorUi();
 }
 Main();
