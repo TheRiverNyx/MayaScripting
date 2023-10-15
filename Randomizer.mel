@@ -1,13 +1,50 @@
-proc RandomPlacementUi(){
-    
-}
-proc RandomPlaceFunc(float $minX, float $maxX, float $minY, float $maxY, float $minZ, float $maxZ, int $numDuplicates){
-    string $selection[] = `ls -sl`;
-    if (size($selection)==0){
-        error "make a selection first";
+proc RandomPlacementUi() {
+    if(`window -exists duplicator`) {
+        deleteUI duplicator;
     }
-    for($i=0; $i<size($selection);$i++){
-        for ($x=0, $x<$numDuplicates;$x++){
+    
+    window duplicator;
+    columnLayout; 
+        text "Minimum X Value";
+        floatField -width 100 minXField;
+        text "Maximum X Value";
+        floatField -width 100 maxXField;
+        text "Minimum Y Value";
+        floatField -width 100 minYField;
+        text "Maximum Y Value";
+        floatField -width 100 maxYField;
+        text "Minimum Z Value";
+        floatField -width 100 minZField;
+        text "Maximum Z Value";
+        floatField -width 100 maxZField;
+        text "how many duplicates?";
+        intField -width 100 dupeAmountField;
+    setParent ..;
+    gridLayout -cellWidth 100;
+        button -l "DUPLICATE!" -c "RunDuplication()";
+    showWindow duplicator;
+}
+
+global proc RunDuplication() {
+    float $minX = `floatField -query -value minXField`;
+    float $maxX = `floatField -query -value maxXField`;
+    float $minY = `floatField -query -value minYField`;
+    float $maxY = `floatField -query -value maxYField`;
+    float $minZ = `floatField -query -value minZField`;
+    float $maxZ = `floatField -query -value maxZField`;
+    int $dupeAmount = `intField -query -value dupeAmountField`;
+    
+    RandomPlaceFunc($minX, $maxX, $minY, $maxY, $minZ, $maxZ, $dupeAmount);
+}
+
+global proc RandomPlaceFunc(float $minX, float $maxX, float $minY, float $maxY, float $minZ, float $maxZ, int $numDuplicates) {
+    string $selection[] = `ls -sl`;
+    if (size($selection) == 0) {
+        error "make a selection first";
+        return;
+    }
+    for($i = 0; $i < size($selection); $i++) {
+        for ($x = 0; $x < $numDuplicates; $x++) {
             float $randX = `rand $minX $maxX`;
             float $randY = `rand $minY $maxY`;
             float $randZ = `rand $minZ $maxZ`;
@@ -18,5 +55,9 @@ proc RandomPlaceFunc(float $minX, float $maxX, float $minY, float $maxY, float $
         }
     }
 }
-proc main(){
+
+proc main() {
+    RandomPlacementUi();
 }
+
+main();
