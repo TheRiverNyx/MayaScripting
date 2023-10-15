@@ -1,0 +1,22 @@
+proc RandomPlacementUi(){
+    
+}
+proc RandomPlaceFunc(float $minX, float $maxX, float $minY, float $maxY, float $minZ, float $maxZ, int $numDuplicates){
+    string $selection[] = `ls -sl`;
+    if (size($selection)==0){
+        error "make a selection first";
+    }
+    for($i=0; $i<size($selection);$i++){
+        for ($x=0, $x<$numDuplicates;$x++){
+            float $randX = `rand $minX $maxX`;
+            float $randY = `rand $minY $maxY`;
+            float $randZ = `rand $minZ $maxZ`;
+            string $duplicates[] = `duplicate -rr $selection[$i]`;
+            string $dupe = $duplicates[0];
+
+            xform -worldSpace -translation $randX $randY $randZ $dupe;
+        }
+    }
+}
+proc main(){
+}
