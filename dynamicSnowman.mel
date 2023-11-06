@@ -1,10 +1,10 @@
-float $size = 7;//the size of the base of the body
-int $bodyNumber = 8; // how many spheres the snowman is made of
-float $moveUpLength = 0;//starting value for moveup length
+float $size = 7;  //the size of the base of the body
+int $bodyNumber = 8;  // how many spheres the snowman is made of
+float $moveUpLength = 0;  //starting value for moveUpLength
 string $object[];
-for ($x=0;$x<$bodyNumber;$x++){//builds the snowman's body
+for ($x=0;$x<$bodyNumber;$x++){  //builds the snowman's body
     $object = `polySphere -r $size -sx 20 -sy 20 -ax 0 1 0 -cuv 2 -ch 1`;
-    $moveUpLength += 1.75*$size;//increments how much to move each sphere up by size
+    $moveUpLength += 1.75*$size;  //increments how much to move each sphere up by size
     move -r -os -wd 0 ($moveUpLength-$size) 0 $object[0];
-    $size-=($size/$bodyNumber);//shrinks body an amount proprtioanl to how many body parts there are
+    $size-=($size/$bodyNumber);  //shrinks body an amount proportional to how many body parts there are
 }
