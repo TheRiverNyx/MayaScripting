@@ -19,7 +19,7 @@ def Change_Shape_Color(color):
         for shape in shape_nodes:  # change color of overRideColor Attribute
             # Enable color override
             cmds.setAttr(f"{shape}.overrideEnabled", True)
-
+            cmds.setAttr(f"{shape}.overrideRGBColors", True)
             # Set the RGB color values
             cmds.setAttr(f"{shape}.overrideColorRGB", *color)
 
