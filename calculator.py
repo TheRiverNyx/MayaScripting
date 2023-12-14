@@ -1,7 +1,7 @@
 import maya.cmds as cmds
 
 
-class CalculatorUI():
+class CalculatorUI:
     def __init__(self):
         self.window_name = 'Calculate'
         if cmds.window('%sWindow' % self.window_name, exists=True):
