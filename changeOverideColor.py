@@ -24,4 +24,4 @@ def Change_Shape_Color(color):
             cmds.setAttr(f"{shape}.overrideColorRGB", *color)
 
 # Example usage
-Change_Shape_Color((1.0, 0.3, 0.1))  # RGB value (red)
+Change_Shape_Color((1.0, 0.3, 0.1))  # RGB value
